@@ -1,0 +1,31 @@
+{
+  "name": "ymusic-lite",
+  "private": true,
+  "version": "0.2.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "cap:sync": "npx cap sync",
+    "cap:android": "npx cap open android",
+    "android": "npm run build && npx cap sync android",
+    "copy:native": "node native/spatial-audio/copy-native.mjs",
+    "clean": "rm -rf dist node_modules/.vite && find . -name '*.map' -delete 2>/dev/null; echo cleaned",
+    "zip": "npm run clean && cd .. && zip -r ymusic-lite.zip ymusic-lite -x 'ymusic-lite/node_modules/*' -x 'ymusic-lite/dist/*' -x 'ymusic-lite/android/*' -x 'ymusic-lite/ios/*' -x '*.map' -x '*DS_Store*'",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.2.0",
+    "typescript": "~5.6.2",
+    "vite": "^5.4.10"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.2.0",
+    "@capacitor/app": "^6.0.2",
+    "@capacitor/core": "^6.2.0",
+    "@capacitor/filesystem": "^6.0.2",
+    "@capacitor/preferences": "^6.0.3",
+    "@capacitor/status-bar": "^6.0.2"
+  }
+}
