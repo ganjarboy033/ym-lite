@@ -1,0 +1,8 @@
+Tambahkan ke dependencies { } di android/app/build.gradle (module):
+
+implementation("androidx.core:core-ktx:1.15.0")
+implementation("androidx.media3:media3-common:1.5.1")
+implementation("androidx.media3:media3-exoplayer:1.5.1")
+implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
+
+Tidak diperlukan Jetpack Compose untuk UI web ini. AudioRenderer memakai Android MediaCodec bawaan. Media3 dibutuhkan oleh MixerProcessor agar efek dapat dipasang ke pemutar Media3/ExoPlayer host.

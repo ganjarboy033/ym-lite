@@ -1,0 +1,63 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag version (e.g. v0.2.0)"
+        required: false
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - run: npm ci --omit=optional --no-audit --no-fund
+      - run: npm run build
+
+      - name: Capacitor + APK
+        run: |
+          npx cap add android || true
+          npx cap sync android
+          cd android && ./gradlew assembleDebug --no-daemon -q
+
+      - name: Pack source zip (tanpa node_modules)
+        run: |
+          zip -r ymusic-lite-source.zip . \
+            -x 'node_modules/*' \
+            -x 'dist/*' \
+            -x 'android/*' \
+            -x 'ios/*' \
+            -x '.git/*' \
+            -x '*.map' \
+            -x '*DS_Store*'
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.tag || github.ref_name }}
+          generate_release_notes: true
+          files: |
+            android/app/build/outputs/apk/debug/*.apk
+            ymusic-lite-source.zip
+            dist/**
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
