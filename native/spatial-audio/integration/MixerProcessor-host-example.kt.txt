@@ -1,0 +1,23 @@
+// Di dalam ExoPlayer host app, daftarkan MixerProcessor pada jalur audio.
+// Salin MixerProcessor.kt dan source DSP native, lalu buat processor factory:
+
+@OptIn(androidx.media3.common.util.UnstableApi::class)
+class SpatialAudioRenderersFactory(context: Context) :
+    androidx.media3.exoplayer.DefaultRenderersFactory(context) {
+    private val appContext = context.applicationContext
+
+    override fun buildAudioSink(
+        context: Context,
+        enableFloatOutput: Boolean,
+        enableAudioTrackPlaybackParams: Boolean
+    ): androidx.media3.exoplayer.audio.AudioSink {
+        val sink = super.buildAudioSink(context, enableFloatOutput, enableAudioTrackPlaybackParams)
+        // Implementasikan AudioProcessor chain host sesuai versi Media3 yang digunakan.
+        // MixerProcessor harus dipasang ke AudioSink; mengubah setting saja tidak otomatis
+        // memproses audio dari pemutar host jika processor belum ditautkan.
+        return sink
+    }
+}
+
+// Catatan: API AudioSink/RenderersFactory dapat berubah antarversi Media3.
+// Cocokkan integrasi dengan versi Media3 aplikasi host sebelum build.

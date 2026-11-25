@@ -1,0 +1,32 @@
+package your.app.package
+
+import androidx.media3.common.Player
+import dev.bagja.spatialaudio.audio.SpatialHostBridge
+
+/**
+ * Panggil dari PlaybackService/kelas yang memiliki instance ExoPlayer.
+ * Jangan membuat ExoPlayer kedua hanya untuk modul spatial.
+ */
+fun bindSpatialHost(player: Player) {
+    SpatialHostBridge.onTogglePlayback = { if (player.isPlaying) player.pause() else player.play() }
+    SpatialHostBridge.onPausePlayback = { player.pause() }
+    player.addListener(object : Player.Listener {
+        override fun onIsPlayingChanged(isPlaying: Boolean) {
+            // Opsional: kirim status ke UI web melalui event host milik aplikasi.
+        }
+    })
+}
+
+/** Panggil saat metadata/posisi lirik berubah. */
+fun updateSpatialLyrics(title: String?, activeLine: String?) {
+    SpatialHostBridge.currentTitle.value = title
+    SpatialHostBridge.currentLyrics.value = activeLine
+}
+
+/** Bersihkan callback ketika service/player dihentikan. */
+fun unbindSpatialHost() {
+    SpatialHostBridge.onTogglePlayback = null
+    SpatialHostBridge.onPausePlayback = null
+    SpatialHostBridge.currentTitle.value = null
+    SpatialHostBridge.currentLyrics.value = null
+}
